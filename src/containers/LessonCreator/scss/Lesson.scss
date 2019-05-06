@@ -1,0 +1,17 @@
+.LessonContainer {
+  height: 100%;
+  background: #2995d2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .LessonActivity {
+    flex: 11;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .LessonUtility {
+    flex: 1;
+    height: 100%;
+  }
+}

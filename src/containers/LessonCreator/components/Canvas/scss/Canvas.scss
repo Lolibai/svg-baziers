@@ -1,0 +1,11 @@
+.canvasContainer {
+  background: #fff;
+  flex: 10;
+  margin: 5px;
+  height: 100%;
+  width: 99.2%;
+  font-family: languagegarden_regular;
+  .svgRect {
+    border: 1px dashed #ddd;
+  }
+}
