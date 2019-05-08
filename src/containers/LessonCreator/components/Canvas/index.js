@@ -16,6 +16,19 @@ export default class Canvas extends Component {
     })
     this.setState({ canvasWords: newWords })
   }
+
+  componentDidUpdate(prevProps) {
+    const { canvasWords } = this.props
+    console.log('canvasWords: ', canvasWords);
+    if (prevProps.canvasWords.length < canvasWords.length) {
+      let newWords = canvasWords
+      newWords.forEach(w => {
+        w.path = this.handlePath(w.points)
+      })
+      this.setState({ canvasWords: newWords })
+    }
+  }
+
   handleKek() {
     this.setState({ colr: 'green' })
   }
@@ -23,8 +36,6 @@ export default class Canvas extends Component {
   handleStart(e) {}
 
   handleDrag({ offsetX, offsetY }, wi, pi) {
-    console.log('offsetY: ', offsetY)
-    console.log('offsetX: ', offsetX)
     const { canvasWords } = this.state
     let newWords = canvasWords
     newWords[wi].points[pi].x = offsetX
@@ -53,62 +64,84 @@ export default class Canvas extends Component {
     }, ${points[2].x} ${points[2].y}, ${points[3].x} ${points[3].y}`
     return path
   }
+
   render() {
     const { canvasWords } = this.state
-
+    const { onSelectWord } = this.props
     return (
-      <div className="canvasContainer" ref="canvasContainer">
+      <svg className="canvasContainer" ref="canvasContainer">
         {canvasWords.map((el, i) => (
-          <svg
-            ref={`ref_${i}`}
-            key={i}
-            className="svgRect"
-            width={el.width}
-            height={el.height}
-          >
-            <path
-              id={`el_${i}`}
-              d={el.path}
-              stroke="blue"
-              stroke-width="1"
-              fill="none"
-            />
+          <g key={i} className="textDraw" onClick={() => onSelectWord(i)}>
+            {el.type === 'pathtext' ? (
+              <path
+                id={`el_${i}`}
+                d={el.path}
+                stroke={el.active ? 'blue' : 'none'}
+                strokeWidth="1"
+                fill="none"
+              />
+            ) : null}
+            {el.active && el.type === 'pathtext' ? (
+              <g stroke="black" strokeWidth="3" fill="black">
+                {el.points.map((p, j) => (
+                  <Draggable
+                    key={j}
+                    scale={0}
+                    onStart={e => this.handleStart(e)}
+                    onDrag={e => this.handleDrag(e, i, j)}
+                    onStop={e => this.handleStop(e, i, j)}
+                    disabled={!el.active}
+                  >
+                    <circle
+                      className="circleParty"
+                      id={`point_${j}`}
+                      cx={p.x}
+                      cy={p.y}
+                      r="5"
+                    />
+                  </Draggable>
+                ))}
+              </g>
+            ) : null}
 
-            <g stroke="black" strokeWidth="3" fill="black">
-              {el.points.map((p, j) => (
-                <Draggable
-                  key={j}
-                  scale={0}
-                  onStart={e => this.handleStart(e)}
-                  onDrag={e => this.handleDrag(e, i, j)}
-                  onStop={e => this.handleStop(e, i, j)}
-                >
-                  <circle id={`point_${j}`} cx={p.x} cy={p.y} r="5" style={{cursor: 'move'}}/>
-                </Draggable>
-              ))}
-            </g>
-
-            <line
-              x1={el.points[0].x}
-              y1={el.points[0].y}
-              x2={el.points[1].x}
-              y2={el.points[1].y}
-              style={{ stroke: 'rgb(255,0,0)', strokeWidth: 1 }}
-            />
-            <line
-              x1={el.points[2].x}
-              y1={el.points[2].y}
-              x2={el.points[3].x}
-              y2={el.points[3].y}
-              style={{ stroke: 'rgb(255,0,0)', strokeWidth: 1 }}
-            />
-
-            <text fill={el.fill} fontSize={el.fontSize}>
-              <textPath href={`#el_${i}`}>{el.text}</textPath>
-            </text>
-          </svg>
+            {el.active && el.type === 'pathtext' ? (
+              <g>
+                <line
+                  x1={el.points[0].x}
+                  y1={el.points[0].y}
+                  x2={el.points[1].x}
+                  y2={el.points[1].y}
+                  style={{
+                    stroke: el.active ? 'rgb(255,0,0)' : 'none',
+                    strokeWidth: 1
+                  }}
+                />
+                <line
+                  x1={el.points[2].x}
+                  y1={el.points[2].y}
+                  x2={el.points[3].x}
+                  y2={el.points[3].y}
+                  style={{
+                    stroke: el.active ? 'rgb(255,0,0)' : 'none',
+                    strokeWidth: 1
+                  }}
+                />
+              </g>
+            ) : null}
+            {el.type === 'pathtext' ? (
+              <text fill={el.fill} fontSize={el.fontSize}>
+                <textPath href={`#el_${i}`}>{el.text}</textPath>
+              </text>
+            ) : (
+              <Draggable>
+                <text x={200} y={200} fill={el.fill} fontSize={el.fontSize}>
+                  {el.text}
+                </text>
+              </Draggable>
+            )}
+          </g>
         ))}
-      </div>
+      </svg>
     )
   }
 }

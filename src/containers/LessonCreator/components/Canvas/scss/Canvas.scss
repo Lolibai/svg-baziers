@@ -8,4 +8,36 @@
   .svgRect {
     border: 1px dashed #ddd;
   }
+  .circleParty {
+    stroke: none;
+    cursor: move;
+  }
+  .textDraw {
+    cursor: pointer;
+  }
+  .textDraw:nth-child(1n) {
+    .circleParty {
+      fill: #2be895;
+    }
+  }
+  .textDraw:nth-child(2n) {
+    .circleParty {
+      fill: #a2594d;
+    }
+  }
+  .textDraw:nth-child(3n) {
+    .circleParty {
+      fill: #07f348;
+    }
+  }
+  .textDraw:nth-child(4n) {
+    .circleParty {
+      fill: #66434f;
+    }
+  }
+  .textDraw:nth-child(5n) {
+    .circleParty {
+      fill: #01946c;
+    }
+  }
 }
