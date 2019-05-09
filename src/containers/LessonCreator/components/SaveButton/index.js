@@ -1,7 +1,7 @@
 import React from 'react'
 
-const SaveButton = ({ onClick }) => {
-  return <button onClick={onClick}>Save</button>
+const SaveButton = ({ tx, onClick }) => {
+  return <button onClick={onClick}>{tx}</button>
 }
 
 export default SaveButton

@@ -18,14 +18,16 @@ export default class Canvas extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { canvasWords } = this.props
-    console.log('canvasWords: ', canvasWords);
+    const { canvasWords, toSave, sendCanvas } = this.props
     if (prevProps.canvasWords.length < canvasWords.length) {
       let newWords = canvasWords
       newWords.forEach(w => {
         w.path = this.handlePath(w.points)
       })
       this.setState({ canvasWords: newWords })
+    }
+    if (toSave) {
+      sendCanvas(this.state.canvasWords)
     }
   }
 
@@ -58,11 +60,37 @@ export default class Canvas extends Component {
     }))
   }
 
+  handleSDrag({ offsetX, offsetY }, wi) {
+    const { canvasWords } = this.state
+    let newWords = canvasWords
+    newWords[wi].x = offsetX
+    newWords[wi].y = offsetY
+    this.setState(prevState => ({
+      ...prevState,
+      canvasWords: newWords
+    }))
+  }
+
+  handleSStop({ offsetX, offsetY }, wi) {
+    const { canvasWords } = this.state
+    let newWords = canvasWords
+    newWords[wi].x = offsetX
+    newWords[wi].y = offsetY
+    this.setState(prevState => ({
+      ...prevState,
+      canvasWords: newWords
+    }))
+  }
+
   handlePath(points) {
-    let path = `M${points[0].x} ${points[0].y} C ${points[1].x} ${
-      points[1].y
-    }, ${points[2].x} ${points[2].y}, ${points[3].x} ${points[3].y}`
-    return path
+    if (points.length > 0) {
+      let path = `M${points[0].x} ${points[0].y} C ${points[1].x} ${
+        points[1].y
+      }, ${points[2].x} ${points[2].y}, ${points[3].x} ${points[3].y}`
+      return path
+    } else {
+      return ''
+    }
   }
 
   render() {
@@ -133,8 +161,12 @@ export default class Canvas extends Component {
                 <textPath href={`#el_${i}`}>{el.text}</textPath>
               </text>
             ) : (
-              <Draggable>
-                <text x={200} y={200} fill={el.fill} fontSize={el.fontSize}>
+              <Draggable
+                scale={0}
+                onDrag={e => this.handleSDrag(e, i)}
+                onStop={e => this.handleSStop(e, i)}
+              >
+                <text x={el.x} y={el.y} fill={el.fill} fontSize={el.fontSize}>
                   {el.text}
                 </text>
               </Draggable>
