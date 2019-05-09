@@ -48,9 +48,9 @@ export default class LessonCreator extends Component {
   }
 
   toCanvas(word) {
-    const { canvasWords } = this.state
+    const { canvasWords, toCheckWords } = this.state
 
-    let newToCheckWords = []
+    let newToCheckWords = toCheckWords
     let newWords = canvasWords
     newWords.push(word)
     newToCheckWords = newToCheckWords.filter(
